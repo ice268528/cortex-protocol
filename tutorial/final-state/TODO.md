@@ -1,15 +1,15 @@
 # TODO
 
 ## Current Work Item
-- [ ] `FB-01` Submit Feedback
-  - Stage: `docs/stages/stage-01-feedback-intake.md`
-  - Goal: 已登录员工可以提交 title + description，并可靠保存为 `new` Feedback。
-  - Status: ready
+none
 
 ## Next
-- [ ] `FB-02` Support Inbox
-- [ ] `FB-03` Manual Triage
+none — M1 awaiting Gate D
 
 ## Blocked
+none
 
 ## Done
+- [x] FB-01 Submit Feedback
+- [x] FB-02 Support Inbox
+- [x] FB-03 Manual Triage

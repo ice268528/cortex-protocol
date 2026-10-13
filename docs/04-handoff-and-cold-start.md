@@ -1,49 +1,59 @@
-# 04. 从网页版交给 Claude Code
+# 04. Handoff and Cold Start
 
-## 1. 第一次交接只做一件事：让 Agent 正式接管 Repository
+## 第一次交给 Coding Agent
 
-前置条件：
+新项目先具备：
 
 ```text
 CLAUDE.md
-+ docs/project/
-+ docs/stages/
-+ TODO.md
+product.md
+roadmap.md
+project-state.md
+architecture/README.md
 ```
 
-都已经存在，而且至少有一个 Current Work Item。
+其中 `project-state.md` 是给 Human 优先阅读的最近一次可信 checkpoint snapshot，同时供 Agent 恢复坐标；它不是实时 control plane。Agent 仍需用 TODO/Git/PR/code 验证 `Last Updated` 之后的变化。
 
-第一次交接时，不要把项目背景重新复制进 Prompt。真正的上下文应该已经在仓库里。
+TODO 可以暂时没有 active Work Item。
 
-使用：[`../prompts/first-handoff-to-claude-code.md`](../prompts/first-handoff-to-claude-code.md)。
+使用：
 
-## 2. 冷启动应该先验证现实，再 coding
+[`../prompts/first-handoff-to-claude-code.md`](../prompts/first-handoff-to-claude-code.md)
 
-Agent 应先：
+Coding Agent 先做：
 
-1. 检查 branch/worktree 和 `git status`；
-2. 读取 Current Work Item；
-3. 读取所属 Stage；
-4. 读取相关 project docs；
-5. 查看真实代码、测试、配置、依赖版本；
-6. 如已有 spec/plan，读取当前 change 的对应文件。
+```text
+Cold Start
+→ Bootstrap Review
+→ reality check
+```
 
-然后判断：设计与工程现实是否冲突。
+而不是直接 coding。
 
-## 3. 两类“设计和现实不一致”要分开
+## Bootstrap Review
 
-### 局部工程差异
+检查：
 
-例如内部 API 调法、字段实现细节、error handling、test structure。通常由 Agent 在 change-level 设计里自己解决。
+- Product / Roadmap / M1 是否一致；
+- 是否有明显错误假设；
+- Architecture baseline 是否过早；
+- 真实 repo / dependency 与文档是否冲突；
+- 第一个需要正式设计的 Work Item 是什么。
 
-### 重大上游设计偏差
+不改变 Human 产品意图的 factual correction 可直接修正。
 
-例如产品行为、业务规则、Domain semantics、核心状态机、Architecture、Security boundary、Stage Goal/AC 需要变化。此时必须进入 Gate A。
+如果要改变已批准 Product / Milestone commitment，则先交还 Human 判断。
 
-## 4. 后续会话
+## 新 Session
 
-Repository 状态维护好以后，新会话使用：[`../prompts/resume-current-work-item.md`](../prompts/resume-current-work-item.md)。
+有 active Work Item：
 
-目标是最终缩短到一句：
+```text
+“继续当前 Work Item。”
+```
 
-> 继续当前 Work Item。
+Agent 根据 Repository 恢复。
+
+没有 active Work Item，而 Human 只给一个小 bug：
+
+> 直接按 bug 判断 Direct Change，不要为了“恢复流程”先创造 Work Item。

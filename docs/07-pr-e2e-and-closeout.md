@@ -1,57 +1,59 @@
-# 07. PR、Review、Playwright 与收尾
+# 07. PR、E2E、Work Item Closeout、Milestone Closeout
 
-## 1. 正常 feature 默认走 PR
+## Work Item
 
-推荐 standing policy：
-
-```text
-独立 branch/worktree
-→ 完成当前 Work Item
-→ 必要验证
-→ push
-→ create PR
-→ CI
-```
-
-除非人明确要求，不默认直接 merge base branch。
-
-## 2. 不要因为“创建了 PR”就机械重复 review
-
-如果 PR HEAD 就是刚刚完成干净 whole-change review 的 HEAD，可以复用该 review 结论。只有 HEAD、实现或 review 前提变化时，再做新的 review。
-
-## 3. Playwright 是 regression asset，不是一次性验收脚本
-
-用户可见流程需要 E2E 时：
+正式 Work Item 正常：
 
 ```text
-先查已有 Playwright
-→ 已覆盖：复用
-→ 行为变化：修改已有 test
-→ 新行为且有长期回归价值：新增 test
-→ 提交到 repo
+branch/worktree
+→ implementation
+→ tests
+→ review
+→ PR/CI as applicable
+→ E2E as applicable
+→ Gate C
 ```
 
-不要为了“流程完整”强行创建没有长期价值的 E2E。
+### Gate C accepted
 
-## 4. Gate C 失败后的 loop
+Agent：
+
+1. Work Item → Done；
+2. 更新 TODO，并形成一次 project-state checkpoint（最新 accepted Work Item / PR / Next / Recent Checkpoints）；
+3. 将真正长期有效、已实际成立的新事实同步到 architecture；
+4. 如果 stable run command / minimal code map / critical standing boundary 改变，同步 `CLAUDE.md`；
+5. 更新必要 Proposal traceability；
+6. 检查当前 Milestone AC / DoD。
+
+不要把整个 Spec/Plan 复制进 Architecture。
+
+## Direct Change
+
+Direct Change 通常只需汇报：
 
 ```text
-人工验收失败
-→ 修复
-→ 重跑受影响验证
-→ 必要时更新 E2E
-→ 必要时 re-review
-→ 再次 Gate C
+changed
+actual verification
+result
+remaining risk
 ```
 
-## 5. Stage accepted 后
+如果没有 durable state 变化，不做额外 Truth Sync 仪式。
 
-Agent 主动：
+## Milestone
 
-1. reconcile 当前有效文档与实际实现；
-2. 识别过时的 Stage-scoped 文档；
-3. 用 `git mv` 归档到 `_archive/stage_XX/`；
-4. 更新 README/index；
-5. 进入 next stage。
+当所有 Work Items / AC 满足：
 
-长期仍代表 current truth 的 `docs/project/` 不应机械归档。
+```text
+→ Gate D
+```
+
+Gate D accepted 后：
+
+- roadmap status；
+- project-state checkpoint（Latest Accepted Milestone / Current Milestone / Next / Recent Checkpoints）；
+- archive 真正过时的 Milestone-scoped artifact；
+- 如 every-session standing context 改变，同步 `CLAUDE.md`；
+- next Milestone。
+
+仍代表 Current Truth 的 project docs 不机械归档。

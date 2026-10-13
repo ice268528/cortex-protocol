@@ -1,17 +1,33 @@
-# Checklist：项目从 0→1 到第一次交接
+# Project Bootstrap Checklist
 
-- [ ] 已确定第一个 `docs/project/` 设计文件
-- [ ] 网页版 ChatGPT 使用逐文件工作协议
-- [ ] 当前文件的关键理解/决策问题已经清零
-- [ ] 当前文件已 accepted 后才进入下一文件
-- [ ] 上游设计冲突已回退修正，没有在下游静默绕过
-- [ ] `docs/project/` 已形成可用 baseline
-- [ ] `docs/stages/` 已定义 Goal / Scope / Non-goals / Work Items / Acceptance Criteria
-- [ ] `TODO.md` 已建立 Current / Next / Blocked / Done
-- [ ] `CLAUDE.md` 已按真实仓库填写，不再是模板占位符
-- [ ] 启动、测试、验证命令已填写
-- [ ] 代码目录与服务边界已填写
-- [ ] `docs/coding-agent-instructions/` 已复制并按项目调整
-- [ ] `docs/coding-guides/` 被定义为“仅明确指定时读取”
-- [ ] 已有明确 Current Work Item
-- [ ] 已使用 first handoff prompt 交给 Claude Code
+## Text scaffold
+- [ ] `CLAUDE.md`
+- [ ] `TODO.md`
+- [ ] `docs/project/`
+- [ ] `docs/proposals/`
+- [ ] `docs/superpowers/`
+- [ ] `docs/coding-agent-instructions/`
+
+## Web ChatGPT
+- [ ] Target User / Problem
+- [ ] Core Experience
+- [ ] Product Principles
+- [ ] M1 User Capability
+- [ ] M1 DoD / Acceptance Criteria
+- [ ] Constraints / Non-Goals
+- [ ] Explicitly Not Now
+
+## Generated project docs
+- [ ] `product.md`
+- [ ] `roadmap.md`
+- [ ] `project-state.md`（Human-readable checkpoint snapshot；初始 accepted/integrated 项可以为 none）
+- [ ] `project-state.md` 有明确 `Last Updated`，且不把每个 Gate/Task 当实时日志
+- [ ] Architecture 只创建真正需要的 baseline
+- [ ] 每个设计文件有 Description + Last Updated
+- [ ] README 最后生成，只做导航
+
+## First Coding Agent handoff
+- [ ] Bootstrap Review
+- [ ] real repo/config/dependency reality check
+- [ ] first meaningful Work Item identified
+- [ ] 小 starter/config/docs 修正没有被机械升级成 Work Item

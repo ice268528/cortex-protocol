@@ -1,17 +1,28 @@
-# Prompt：第一次把项目交给 Claude Code
+# Prompt：New Project 第一次交给 Coding Agent
 
 ```text
-这是这个项目第一次进入 Coding Agent 实施阶段。
+这是一个全新项目。
 
-项目的初始设计、Stage 划分和 Work Item 已经由我在前置设计阶段完成并写入仓库。
+Product / Roadmap / Project State 已放入 docs/project/；
+Architecture 只包含 Human 明确选择的 baseline 或 UNDECIDED 项。
 
-请先按照 `CLAUDE.md` 执行冷启动流程，并从 `TODO.md` 的 Current Work Item 开始。
+请按 CLAUDE.md 冷启动并做 Bootstrap Review：
 
-在进入具体实现前，先结合当前代码库、实际依赖和必要的工程验证，确认与该 Work Item 相关的上游设计和 Stage 假设是否成立。
+1. 读取 project-state 了解最近一次可信 checkpoint 和 `Last Updated`，再用 TODO/Git/PR/code 验证之后的真实变化；检查 Product / Roadmap / Current Milestone 与当前实际状态是否一致；
+2. challenge 错误假设和过早技术决定；
+3. 对照真实 repo / config / dependencies；
+4. 不改变产品意图的 factual/structural correction 可以直接完成；
+5. 如果建议会改变 approved product intent / Milestone commitment，先停下来让我决定。
 
-如果发现需要实质性修改既有设计，按 CLAUDE.md 的 Design Divergence Gate 停下来让我审查；不要为了遵守已有文档而硬实现，也不要静默修改重大设计。
+然后选择最小正确 delivery path：
 
-如果没有需要我处理的设计偏差，则按照项目约定和 Superpowers 正常流程推进，并在应当进行人工审查的 Gate 停下来通知我。
+- starter/config/docs 的小修，符合 Direct Change 就直接修 + verify；
+- 第一个真正需要独立设计/验收的 vertical slice，创建 Work Item：
+  Repo Investigation → Spec → 停在 Gate B。
 
-只读取当前工作需要的最小上下文，不要为了全面了解项目而默认加载所有文档。
+不要穷举整个 Milestone backlog。
+不要创建整个项目的巨大 Spec。
+不要把 architecture templates 全部填满。
+
+任意阶段真实证据要求改变 approved project design / Milestone / approved change design → Gate A。
 ```

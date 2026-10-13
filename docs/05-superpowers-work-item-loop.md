@@ -1,55 +1,73 @@
-# 05. Superpowers 在一个 Work Item 里负责什么
+# 05. Direct Change 与正式 Work Item
 
-## 边界
+## Direct Change
 
-Cortex Protocol 把 Superpowers 当作 **change-level engineering workflow**。它不负责定义整个项目的产品方向，也不应该替代 `docs/project/`、`docs/stages/` 和 `TODO.md`。
+适合：
 
-## 推荐衔接
+- 已知正确行为的 bug；
+- copy / spacing / color / alignment；
+- non-semantic UI polish；
+- 等价 refactor；
+- 小型 test/build/config fix。
+
+流程：
 
 ```text
-Current Work Item
-+ 当前 Stage
-+ 相关 project docs
-+ 真实代码/依赖
-        ↓
-Superpowers brainstorming
-        ↓
-change-level spec
-        ↓
-Gate B: Human Spec Review
-        ↓ approved
-Superpowers writing-plans
-        ↓
-隔离工作区 / implementation / TDD / review / verification
-        ↓
-PR / CI / E2E（按项目规则）
-        ↓
-Gate C: Feature Acceptance
+inspect
+→ change
+→ targeted verification
+→ review
+→ report
 ```
 
-## Gate B 为什么在 spec 后，而 plan 不需要人工 review
+不强制 Spec / Plan / Gate B / Gate C。
 
-人真正需要判断的是“这个系统行为是不是我要的”。一旦 spec 已批准，implementation task decomposition、文件修改顺序、测试步骤等属于工程执行层，默认交给 Superpowers 和 Coding Agent。
+可以使用 Superpowers 的 debugging/testing/review 能力，但不要为了工具流程制造 durable artifacts。
 
-因此这个工作流的策略是：
+## Work Item
 
-- **Spec 要人工审**；
-- **Plan 默认不人工审**；
-- 如果 plan 或 implementation 暴露重大上游设计错误，再跳出正常 loop 进入 Gate A。
+需要独立设计/验收时：
 
-## 不要在 `CLAUDE.md` 重复的内容
+```text
+Repo Investigation
+→ Spec
+→ Gate B
+→ Plan
+→ Implementation
+→ Tests / Review / Verification
+→ Gate C
+```
 
-如果你的 Superpowers 版本已经负责这些能力，就不要再写第二套强制流程：
+一个 Work Item 一个主要 Spec + Plan。
 
-- brainstorming；
-- spec 自审/用户 review gate；
-- writing plans；
-- worktree/isolation；
-- subagent-driven development；
-- TDD；
-- task-level review；
-- whole-change review；
-- verification / fix / re-review；
-- branch finishing 的内部工程步骤。
+## 什么时候升级
 
-`CLAUDE.md` 只需要补充项目级约束和与这些能力的衔接点。
+Direct Change 中发现：
+
+```text
+approved semantics 要变
+public/cross-module contract 要变
+state/persistence/security semantics 要变
+多个重要 design fork
+需要跨 session coordination
+需要独立 Human acceptance
+blast radius 显著变大
+```
+
+则停止轻量路径。
+
+- approved design change → Gate A
+- new capability → Proposal → Review → Gate R
+- capability 已批准但需要正式设计 → Work Item
+
+## Plan-local
+
+当前 Work Item 内的 implementation adjustment：
+
+- 不改 Spec semantics；
+- 不改 AC；
+- 不改 public contract。
+
+可直接处理。
+
+只有它影响后续执行/恢复时才值得写回 Plan。

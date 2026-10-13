@@ -1,57 +1,132 @@
-# 02. 网页版 ChatGPT：如何做 0→1 项目设计
+# 02. Web ChatGPT：从长期讨论沉淀成项目文件
 
-## 目标
+Web ChatGPT 有两个主要角色：
 
-网页版阶段不是“让 AI 一次生成一套漂亮文档”，而是让人真正参与并理解设计，再把已经确认的结论写进 Repository。
+1. 全新项目的 Project Bootstrap；
+2. 已有项目的新 capability / direction Exploration。
 
-## 工作方式：逐文件收敛
+共同原则：
 
-```text
-选择当前文件
-→ ChatGPT 读取目标 + 已 accepted 的上游文档
-→ 主动暴露需要人理解/选择/确认的问题
-→ 逐项讨论
-→ 决策问题清零
-→ ChatGPT 明确“当前设计已收敛”
-→ 生成最终文档
-→ 人确认 accepted
-→ 进入下一个文件
+> **先讨论，后沉淀；文件保存收敛后的 durable conclusions，不保存聊天流水账。**
+
+---
+
+## 1. File Output Contract
+
+给 Web ChatGPT 的 Prompt 应提前说明最终文件契约：
+
+- Path
+- Description
+- Required Headings
+- `Last Updated`
+- 什么情况下生成
+- 多文件时 README 怎么写
+
+推荐统一头部：
+
+```md
+# <Title>
+
+> **Description:** 用 1–2 句话说明这个文件回答什么问题。
+> **Last Updated:** YYYY-MM-DD
 ```
 
-后续文件把前面 accepted 的文档当作 baseline。
+规则：
 
-## 为什么不要一次生成全部设计
+- Description 描述稳定职责，不描述聊天过程；
+- 实质内容改变时更新 Last Updated；
+- 只有职责改变才改 Description；
+- 纯格式化不刷新日期。
 
-一次性生成 product + technology + domain + data flow + architecture + stages，看起来效率高，但人容易变成“批量审结果”，没有真正建立自己的系统模型。后面发现冲突时，也很难知道应该回到哪一层修正。
+---
 
-逐文件设计的价值在于：
+## 2. 新项目
 
-- 每层决策都能被理解和确认；
-- 上下游关系清楚；
-- 设计冲突能回溯到真正的源头；
-- Repository 最终保存的是 accepted baseline，而不是聊天过程。
-
-## 发现上游设计错误怎么办
-
-例如正在讨论 Data Flow，却发现 Domain Model 的状态定义不成立：
+Human 可以和 ChatGPT 聊很多轮：
 
 ```text
-暂停当前 Data Flow
-→ 明确指出与已 accepted Domain Model 的冲突
-→ 回到 Domain Model
-→ 讨论并修正
-→ 更新 accepted baseline
-→ 再继续 Data Flow
+Target User / Problem
+Core Experience
+Product Principles
+M1 User Capability
+M1 Definition of Done / AC
+Constraints / Non-Goals
+Explicitly Not Now
 ```
 
-不要在下游文件里静默“兼容”错误上游设计。
+只有 Human 明确说：
 
-## 输出文档时的原则
+> “整理成文件”
 
-- 只保留已确认的当前结论；
-- 被否决方案不作为当前设计继续存在；
-- 未确定内容标为假设；
-- 不为了“看起来完整”而编造；
-- 一个文件没收敛前不提前设计后续文件。
+才生成。
 
-直接使用：[`../prompts/web-design-session.md`](../prompts/web-design-session.md)。
+默认核心文件：
+
+```text
+docs/project/product.md
+docs/project/roadmap.md
+docs/project/project-state.md
+```
+
+Architecture 只按需创建。
+
+不要为了模板完整把 database、queue、cache、API、deployment 一次性全部决定。
+
+---
+
+## 3. 已有项目的新功能 / 新方向
+
+讨论收敛后形成 Proposal。
+
+简单：
+
+```text
+docs/proposals/<name>.md
+```
+
+复杂：
+
+```text
+docs/proposals/<name>/
+├── README.md
+├── product-behavior.md
+├── architecture-options.md
+└── ...
+```
+
+多文件时：
+
+1. 先决定真实需要哪些文件；
+2. 先写 supporting files；
+3. README 最后生成；
+4. README 只做 overview / navigation / cross-cutting open questions；
+5. 不复制 supporting files 的完整正文。
+
+Proposal 不是 Requirement，也不是 Approved Design。
+
+下一步必须由 Coding Agent 对真实 repo 做 Review，然后进入 Gate R。
+
+---
+
+## 4. 为什么不让 Web ChatGPT 直接决定是否做
+
+Web ChatGPT 通常不知道：
+
+- 真实 repo 已经实现什么；
+- 当前 Milestone 实际 commitment；
+- 真实依赖版本；
+- architecture constraints；
+- 现有 Work Item 是否已覆盖。
+
+因此：
+
+```text
+ChatGPT
+= 扩大、整理 design space
+
+Coding Agent
+= 用真实 repo evidence 收敛
+
+Human
+= 在 Gate R 确认最终 disposition
+```

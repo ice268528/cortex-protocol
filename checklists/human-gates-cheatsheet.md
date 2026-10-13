@@ -1,37 +1,43 @@
-# Checklist：Human Gate 速查卡
+# Human Gates Cheat Sheet
 
-## Gate A — Design Divergence
+| Gate | Trigger | Human 判断 | Accepted / Confirmed 后 Agent 自动同步 |
+|---|---|---|---|
+| **R** | Proposal Review 已形成 Recommendation | 我同意 Agent 对这个 Proposal 的 disposition 判断吗？ | Proposal disposition；`START_NOW` 按需 Roadmap，Work Item activated 时 TODO + project-state |
+| **A** | approved project/Milestone/change design 必须实质改变 | 这个已批准设计真的要改吗？ | 只同步实际受影响 owner：product / roadmap / architecture / Spec / Plan / TODO / project-state / CLAUDE |
+| **B** | 正式 Work Item Spec 收敛 | 这个系统设计是不是我要的？ | Spec → accepted；TODO live status；创建/更新 Plan；通常不改 project-state |
+| **C** | Work Item implementation/verification/review 完成 | 这个真实功能是不是我要的？ | TODO Done；project-state checkpoint；Verified Current architecture；必要 Proposal/CLAUDE reconciliation |
+| **D** | Milestone Work Items + DoD/AC 均有 evidence | 这一整层用户能力完整交付了吗？ | Roadmap accepted；project-state checkpoint；closeout；必要 CLAUDE reconciliation |
 
-- [ ] Agent 给出了原设计
-- [ ] Agent 给出了真实工程证据
-- [ ] 冲突属于重大上游设计，而非局部实现差异
-- [ ] 建议方案与 alternatives 清楚
-- [ ] 影响的 project/stage/TODO/spec/plan 已列出
-- [ ] 我已明确批准或拒绝设计修正
+## Gate R
 
-## Gate B — Spec Review
+无论 recommendation 是：
 
-- [ ] 我能解释业务流程
-- [ ] 我能解释数据流与状态变化
-- [ ] 关键计算/持久化/外部服务边界清楚
-- [ ] 如果有 AI Agent，我理解 context、tools、state、output 和 decision ownership
-- [ ] 我审的是系统行为，不是函数实现
-- [ ] 我已明确批准或要求回到 brainstorming
+```text
+START_NOW
+ABSORB
+DEFER
+BLOCK
+REJECT
+```
 
-## Gate C — Feature Acceptance
+都必须让 Human 确认。Recommendation 不是 final disposition。
 
-- [ ] Agent 列出了实际完成内容
-- [ ] Agent 只汇报实际执行过的自动验证
-- [ ] 适用的 E2E 已完成
-- [ ] 我拿到了手动场景、操作和预期
-- [ ] 我实际验收了功能
-- [ ] 通过后才允许 Work Item → Done
+## Gate A
 
-## Gate D — Stage Acceptance
+不是 happy-path stage，是 interrupt。Human 决定前不能把 suggested change 写成 approved/current truth。
 
-- [ ] Stage Goal 已实现
-- [ ] Acceptance Criteria 已满足
-- [ ] Work Items 已完成
-- [ ] 当前实际系统与 Stage 承诺一致
-- [ ] 我已明确 accepted
-- [ ] Agent 随后执行 reconciliation / archive / README-index 更新
+## Gate B
+
+Gate B accepted 的核心是 **Spec 成为 approved baseline**。不要因为 accepted 就把未来实现提前写成 `Verified Current` architecture。
+
+## Gate C / D
+
+这两个 Gate accepted 都是明确的 Repository reconciliation checkpoint：
+- C = Work Item closeout；
+- D = Milestone closeout。
+
+## Direct Change
+
+小改默认不经过 B/C。
+
+如果它揭示 approved design 必须改变，仍然可以触发 A。Direct Change 如果真实改变 stable run command 等已有 owner fact，仍更新对应 owner。

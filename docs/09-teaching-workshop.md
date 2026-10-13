@@ -1,57 +1,68 @@
-# 09. 如何教 Cortex Protocol：90 分钟 Workshop
+# 09. 如何教 Cortex Protocol v2
 
-## 目标
+## 学完应该能回答
 
-学员结束后应该能：
+1. Milestone / Work Item / Task 的区别；
+2. Proposal 为什么不直接变 Requirement；
+3. Gate R 为什么要 Human 确认 Agent recommendation；
+4. Gate A 为什么是 interrupt；
+5. Gate B 与 C 为什么不同；
+6. Gate D 为什么不能由最后一个 Work Item 自动触发完成；
+7. 什么改动可以 Direct Change；
+8. Architecture 为什么不复制完整 API/DB schema。
 
-1. 解释网页版 ChatGPT、Repository、Claude Code、Superpowers、Human 各自负责什么；
-2. 用逐文件方式完成 0→1 设计；
-3. 建立 `docs/project/`、`docs/stages/`、`TODO.md`；
-4. 完成第一次 Claude Code handoff；
-5. 区分 Gate A/B/C/D；
-6. 不再把 Superpowers 已有流程重复塞进 `CLAUDE.md`。
+## 推荐 90 分钟
 
-## 课程安排
+### 0–15：失败模式
 
-建议开场先用 [`../WHY.md`](../WHY.md) 的失败模式建立共同问题意识，再用 `PROTOCOL.md` 作为精确定义参考。不要让学员第一步就背规范。
+- 长会话丢上下文；
+- Proposal 被 AI 偷偷变成需求；
+- 小改流程过重；
+- Agent 静默改 approved design；
+- 文档与代码漂移。
 
-### 0–15 分钟：先讲失败模式
+### 15–30：Repository Memory + Taxonomy
 
-让学员回忆：长会话上下文丢失、TODO 靠人脑记、Agent 静默改设计、文档与代码不一致、重复 review、一次性 E2E。
+```text
+Milestone → Work Item → Task
+```
 
-### 15–30 分钟：讲三层设计
+### 30–45：Web ChatGPT
 
-用 [`01-mental-model.md`](01-mental-model.md) 解释 project-level / change-level / implementation-level 的边界。
+演示：
 
-### 30–50 分钟：演示网页版逐文件设计
+```text
+长期讨论
+→ File Output Contract
+→ project docs / Proposal package
+```
 
-使用 [`../prompts/web-design-session.md`](../prompts/web-design-session.md)，让 ChatGPT 只处理一个设计文件。重点演示“问题没清零前不生成最终文档”和“发现上游冲突就回退”。
+### 45–60：Proposal Review + Gate R
 
-### 50–65 分钟：把设计变成 Repository state
+让 Agent 给出 DEFER / START_NOW recommendation，再让 Human 明确确认或反对。
 
-展示：
+### 60–75：Work Item B/C + Gate A
 
-- `docs/project/`
-- `docs/stages/`
-- `TODO.md`
-- `CLAUDE.md`
+演示：
 
-然后打开 [`../tutorial/`](../tutorial/) 看一个最小示例。
+```text
+Spec → B → Execution → C
+```
 
-### 65–80 分钟：Claude Code + Superpowers 接管
+并插入一个真实 engineering conflict 触发 A。
 
-使用第一次 handoff prompt，沿着 Current Work Item 讲解：现实验证 → Gate A（条件）→ spec → Gate B → plan/execution → PR/E2E → Gate C。
+### 75–85：Direct Change
 
-### 80–90 分钟：Stage 收尾与复盘
+对比：
 
-讲 Gate D、documentation reconciliation、archive，以及为什么新会话最终只需要“继续当前 Work Item”。
+```text
+改 spacing
+vs
+改变 delete confirmation semantics
+```
 
-## 练习题
+前者 Direct Change，后者可能 Gate A。
 
-1. “数据库字段名与设计文档不同，但业务语义没变”应该进 Gate A 吗？为什么？
-2. “为了兼容真实 API，核心状态机需要增加一个状态”应该谁决定？
-3. Plan 写完后是否默认需要人工 review？
-4. Gate C 通过前能不能把 Work Item 标记为 Done？
-5. 为什么 `docs/coding-guides/` 不应该默认全量加载？
+### 85–90：Milestone Gate D
 
-答案都能在本仓库教程中找到。
+回到 Milestone DoD / AC，而不是只看最后一个 PR。

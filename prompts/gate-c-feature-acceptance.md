@@ -1,19 +1,21 @@
-# Prompt：Gate C — 要求 Feature Acceptance Packet
-
-当 Agent 说实现完成，但你需要一份可执行的人工验收说明时发送：
+# Prompt：Gate C — Feature / Work Item Acceptance
 
 ```text
-进入 Cortex Protocol Gate C。先不要把 Current Work Item 标记为 Done。
+请进入 Gate C。
 
-请给我一个 Feature Acceptance Packet，只汇报你实际完成和实际验证过的内容：
+先不要把 Work Item 标记 Done。
 
-1. 当前 Work Item 和 PR/branch；
-2. 本次实际完成的用户/系统能力；
-3. 已实际执行并通过的 unit / integration / CI / review / E2E；
-4. 需要我手动验收的场景；
-5. 每个场景的前置条件、操作步骤、预期结果；
-6. 当前仍无法自动验证或需要我特别观察的内容；
-7. 为人工验收需要保持运行的服务和访问入口。
+请提供：
 
-不要把没有运行过的验证写成已通过。等我明确 accepted 后，再执行 Work Item Done 和后续 reconciliation。
+- 当前 Work Item / PR
+- 实际完成内容
+- 实际执行过的 unit/integration/build/CI/review/E2E
+- 需要我手动验收的最小场景
+- 每个场景的操作步骤
+- 预期结果
+- 无法自动验证的内容
+- 已知限制 / remaining risk
+- 我验收需要的服务和入口
+
+等我明确 accepted 后再执行 Work Item closeout。
 ```

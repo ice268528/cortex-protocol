@@ -1,56 +1,56 @@
-# Guided Tutorial — 用 Feedback Inbox 跑完第一次 Cortex Protocol
+# Guided Tutorial — 从文本脚手架到日常 Coding
 
-这个 Tutorial 的目标不是让你背规则，而是让你**亲手经历一次正确的人机分工**。
-
-我们用一个虚构但足够真实的小项目：**Feedback Inbox**。
+本教程用一个虚构项目 **Feedback Inbox** 完整跑一遍 v2。
 
 产品想法只有一句：
 
-> 做一个内部 Feedback Inbox，让用户提交反馈，团队可以查看、分类并处理。
+> 让员工提交内部反馈，让 Support 团队查看、分类并处理。
 
-你会从这句话开始，一直跑到第一个 Work Item 通过 Gate C，再演示新 Claude Code session 如何恢复状态。
+## 第一次建立项目
 
-## 你将完成什么
+1. [`00-overview.md`](00-overview.md) — 先看全流程
+2. [`01-copy-starter.md`](01-copy-starter.md) — 从文本脚手架开始
+3. [`02-chatgpt-product-exploration.md`](02-chatgpt-product-exploration.md) — 和 Web ChatGPT 讨论需求
+4. [`03-generate-project-docs.md`](03-generate-project-docs.md) — 生成 Product / Roadmap / State / optional Architecture
+5. [`04-first-coding-agent-handoff.md`](04-first-coding-agent-handoff.md) — 第一次交给 Coding Agent
+6. [`05-first-work-item-and-gate-b.md`](05-first-work-item-and-gate-b.md) — 第一个正式 Work Item
+7. [`06-execution-gate-a-gate-c.md`](06-execution-gate-a-gate-c.md) — Execution、Gate A、Gate C
+8. [`07-milestone-gate-d.md`](07-milestone-gate-d.md) — Milestone Acceptance
+
+## 项目日常的另外三种情况
+
+9. [`08-new-feature-proposal-and-gate-r.md`](08-new-feature-proposal-and-gate-r.md) — 新功能：Proposal → Review → Gate R
+10. [`09-mid-flight-idea.md`](09-mid-flight-idea.md) — 做功能途中有新想法
+11. [`10-bug-and-small-change.md`](10-bug-and-small-change.md) — Bug / 前端小改 / Direct Change
+
+## 新 Session
+
+12. [`11-resume.md`](11-resume.md) — 怎么靠 Repository 恢复
+
+读完你应该只需要记住：
 
 ```text
-一句产品想法
-→ Web ChatGPT 逐文件设计
-→ accepted project docs
-→ Stage / Work Item
-→ Repository state
-→ 第一次 Claude Code handoff
-→ Superpowers spec
-→ Gate B
-→ Agent execution
-→ Gate C
-→ Work Item Done
-→ 新 session resume
+新 capability → Proposal → Review → Gate R
+approved design 必须变 → Gate A
+正式 Work Item 设计 → Gate B
+正式 Work Item 真实验收 → Gate C
+Milestone 完整验收 → Gate D
+小而明确的维护改动 → Direct Change
 ```
 
-## 使用方式
+## 完整示例产物
 
-按顺序读：
+如果你想跳过步骤、直接看“跑完以后 Repository 里的文件长什么样”，可以看这些 final-state examples：
 
-1. [`00-start.md`](00-start.md) — 先知道整个练习在做什么
-2. [`01-project-design.md`](01-project-design.md) — 逐文件设计，不让 AI 一次性替你决定所有东西
-3. [`02-stage-and-work-item.md`](02-stage-and-work-item.md) — 从长期设计拆出 Stage 和 Work Item
-4. [`03-repository-setup.md`](03-repository-setup.md) — 把设计变成可恢复 Repository state
-5. [`04-first-handoff.md`](04-first-handoff.md) — 第一次交给 Claude Code
-6. [`05-gate-b.md`](05-gate-b.md) — Human 第一次真正回来：审 Spec，不审 Plan
-7. [`06-execution.md`](06-execution.md) — Human 不插手的阶段
-8. [`07-gate-c.md`](07-gate-c.md) — 验真实功能，不是验代码细节
-9. [`08-resume.md`](08-resume.md) — 新 session 只靠 Repository 恢复
+| 示例 | 展示什么 |
+|---|---|
+| [`final-state/docs/project/product.md`](final-state/docs/project/product.md) | Product intent 的最终形态 |
+| [`final-state/docs/project/roadmap.md`](final-state/docs/project/roadmap.md) | Milestone / Capability / DoD / AC |
+| [`final-state/docs/project/project-state.md`](final-state/docs/project/project-state.md) | Human-readable checkpoint snapshot |
+| [`final-state/TODO.md`](final-state/TODO.md) | 正式 Work Item live state |
+| [`final-state/docs/project/architecture/system-overview.md`](final-state/docs/project/architecture/system-overview.md) | 一个真正需要长期保留的 Architecture topic |
+| [`final-state/review-packets/fb-01-gate-b.md`](final-state/review-packets/fb-01-gate-b.md) | Gate B Design Review Packet |
+| [`final-state/review-packets/fb-01-gate-c.md`](final-state/review-packets/fb-01-gate-c.md) | Gate C Feature Acceptance Packet |
 
-示例最终状态在 [`final-state/`](final-state/)。
+这些是教学示例，不是要求真实项目机械复制全部文件。
 
-## Tutorial 中反复出现的两个框
-
-### YOUR JOB RIGHT NOW
-
-告诉你此刻 Human 真正应该判断什么。
-
-### DON'T DO THIS
-
-告诉你此刻**不要重新接管 Agent 的工作**。
-
-Cortex Protocol 很大一部分价值，不是教 Human 多做什么，而是教 Human **哪些事情以后不用再做**。

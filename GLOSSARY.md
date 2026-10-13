@@ -1,23 +1,71 @@
-# Cortex Protocol Glossary
+# Glossary — Cortex Protocol v2
 
-这不是完整术语词典，只解释第一次使用 Cortex Protocol 最容易混淆的词。
+## Milestone
 
-| 术语 | Plain-language 解释 |
-|---|---|
-| **Project-level design** | 系统长期应该是什么样：产品边界、Domain、Data Flow、Architecture 等。 |
-| **Stage** | 一段有明确目标和验收标准的开发阶段；比 Work Item 大，比整个项目小。 |
-| **Work Item** | 一个可以相对独立完成并验证的项目级能力变化。不是“修改某个文件”。 |
-| **Current Work Item** | Coding Agent 当前唯一应该主要推进的项目级 change。 |
-| **Spec** | 这次 Work Item 在当前系统里应该“怎么工作”，属于 change-level design。 |
-| **Plan** | Coding Agent / Superpowers 准备“怎么实现”：文件、测试、步骤等。默认不需要 Human review。 |
-| **Gate** | Agent 必须暂停，把某类判断权交回 Human 的节点。 |
-| **Gate A** | 真实工程证据可能推翻重要已批准设计时的决策 Gate。 |
-| **Gate B** | Spec 收敛后，Human 审“系统行为是不是我要的”。 |
-| **Gate C** | 实现与验证完成后，Human 验“真实功能是不是我要的”。 |
-| **Gate D** | Stage 看起来完成时，Human 验“阶段承诺是否完整交付”。 |
-| **Current truth** | 当前仍然有效、应该指导后续工作的长期事实；不是历史聊天记录。 |
-| **Repository state** | 让新 session 能恢复项目当前位置的持久状态：docs、TODO、代码、tests、git 等。 |
-| **Reconcile** | 设计或实现变化后，把受影响文档、TODO、spec/plan 与当前实际系统重新对齐。 |
-| **Housekeeping** | TODO 更新、文档同步、review 调度、服务清理、归档等可由规则驱动的流程维护工作。 |
-| **Cold start** | 新 Claude Code session 从 Repository 恢复当前状态并验证工程现实的启动过程。 |
-| **Standing policy** | 持续有效的项目级 Agent 规则，通常放在 `CLAUDE.md` 或按需 instruction 文件中。 |
+一整层完整用户能力。默认定义在 `docs/project/roadmap.md`。
+
+包含 User Capability、Definition of Done / Acceptance Criteria、Scope / Non-Goals、Status。
+
+## Work Item
+
+一项需要独立设计、实现、验证、验收的 coherent change。
+
+一个 implementation-bearing Work Item 对应一个主要 Spec + Plan。
+
+## Task
+
+Plan 内部 implementation step，不进入 TODO。
+
+## Proposal
+
+已有项目中的候选新 capability / direction。
+
+Proposal 不是 Requirement、Approved Design 或 Current Truth。
+
+## Gate R
+
+Proposal Review 完成后的 Human Decision Gate。
+
+Coding Agent 给 recommendation；Human 决定是否接受该判断。
+
+## Gate A
+
+Design Divergence Gate。
+
+真实工程证据表明 approved project design、Milestone commitment/AC 或 approved change design 需要实质调整时触发。
+
+## Gate B
+
+Work Item Spec Review。
+
+Human 审“系统应该怎样工作”。
+
+## Gate C
+
+Feature / Work Item Acceptance。
+
+Human 验“真实运行起来是不是我要的”。
+
+## Gate D
+
+Milestone Acceptance。
+
+Human 验当前 Milestone 承诺的整层用户能力是否完整成立。
+
+## Direct Change
+
+小、明确、低风险、不需要独立设计/验收的 code change。
+
+不是正式项目层级。
+
+## Current Truth
+
+已经成立且仍适用于当前系统的 durable project/architecture truth。
+
+## Approved Baseline
+
+Human 已明确批准的长期设计边界，但不一定所有实现都已完成。
+
+## UNDECIDED
+
+现在没有必要决定；应附 `Decision Trigger`。

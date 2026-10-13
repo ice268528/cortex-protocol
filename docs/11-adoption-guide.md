@@ -1,84 +1,155 @@
-# 11. Adoption Guide：把现有项目迁移到 Cortex Protocol
+# 11. v1 / Existing Project → v2
 
-不需要为了采用 Cortex Protocol 重做整个项目。最稳妥的方法是先把“项目记忆”和“人类 Gate”从聊天历史里迁回 Repository。
+## 0. v2 保留什么、改变什么
 
-## Phase 1：建立最小状态源
+v2 以 GitHub v1 为正式基线演化，不把中间未提交的实验包当作版本历史。
 
-先补齐四个入口：
+继续保留的核心：
 
-```text
-CLAUDE.md
-docs/project/
-docs/stages/
-TODO.md
-```
+- Repository as durable memory；
+- Human Gate A / B / C / D；
+- Work Item + Spec + Plan 分层；
+- Superpowers workflow 不由 Cortex 重复实现；
+- cold start / minimum context loading；
+- Git / runtime / verification standing rules。
 
-不要一开始追求文档完美。先确保它们能分别回答：Agent 怎么工作、系统长期是什么、当前 Stage 为什么做、现在做到哪里。
-
-## Phase 2：清理 TODO 粒度
-
-把 `TODO.md` 里的文件级、函数级、测试步骤移出项目级队列。这些应该进入当前 change 的 plan。
-
-保留能独立描述能力变化、能独立验证、能归属某个 Stage 的 Work Item。
-
-## Phase 3：把隐含设计变成 current truth
-
-从现有代码和已确认产品行为中，提炼仍然有效的长期设计到 `docs/project/`。
-
-不要把旧聊天全文、历史争论或已废弃方案搬进去。需要历史时用 Git history / archive；`docs/project/` 的职责是 current truth。
-
-## Phase 4：定义四个 Human Gate
-
-把 Gate A/B/C/D 写入根 `CLAUDE.md`，并明确：
-
-- 什么情况必须停；
-- Agent 要给 Human 什么材料；
-- Human 决定后谁负责 reconcile；
-- 哪些工程细节不构成人工 Gate。
-
-## Phase 5：去掉与 Superpowers 重复的流程
-
-检查 `CLAUDE.md` 是否重新规定了 Superpowers 已经负责的 brainstorming、TDD、subagent、task review、whole-change review、verification 等流程。
-
-重复规则越多，越容易出现两个 workflow 互相打架。保留项目级 standing policies 和衔接点即可。
-
-## Phase 6：从一个 Work Item 试运行
-
-不要一次迁移所有历史工作。选择一个边界清楚的 Current Work Item：
+v2 的主要结构变化：
 
 ```text
-cold start
-→ reality check
-→ Gate A if needed
-→ spec
-→ Gate B
-→ execution
-→ Gate C
+Stage → Milestone
++ Proposal / Gate R
++ Direct Change
++ Human-readable project-state checkpoint
++ 按需 Architecture topics
++ Web ChatGPT File Output Contract
 ```
 
-跑通后再调整模板和项目规则。
+下面按迁移动作展开。
+## 1. Stage → Milestone
 
-## Phase 7：观察 Human 是否仍在 babysitting
+删除正式 Stage 层。
 
-如果 Human 仍频繁提醒：
+把原 Stage 的：
 
-- 更新 TODO；
-- 同步某个文档；
-- 运行 review；
-- 关闭服务；
-- 创建 PR；
-- 归档 Stage；
+```text
+Goal
+Scope / Non-Goals
+Acceptance Criteria
+Work Item list
+```
 
-说明这些职责还没有真正进入 Repository rules。把重复出现的 housekeeping 写进相应 coding-agent instruction，而不是继续依赖人记忆。
+迁入：
 
-## 成功标准
+```text
+docs/project/roadmap.md
+```
 
-迁移完成后，一个新的 Claude Code session 应该能够在不听完整项目背景的情况下：
+作为对应 Milestone。
 
-1. 找到 Current Work Item；
-2. 理解它属于哪个 Stage；
-3. 找到相关长期设计；
-4. 验证工程现实；
-5. 知道什么时候自主推进、什么时候必须停下来找 Human。
+正式 taxonomy：
 
-如果这五件事做不到，优先修 Repository state，而不是继续加长启动 Prompt。
+```text
+Milestone → Work Item → Task
+```
+
+## 2. 建立 project-state
+
+新增：
+
+```text
+docs/project/project-state.md
+```
+
+把它作为 Human-readable durable checkpoint snapshot：说明已经完成到哪个 Milestone/Work Item、当前 Work Item/PR、Next、durable blocker 和 `Last Updated`；同时供新 Agent 恢复坐标。它不是实时 event log。
+
+## 3. 建 Proposal Inbox
+
+```text
+docs/proposals/
+├── README.md
+├── _TEMPLATE.md
+├── _PACKAGE_TEMPLATE/
+└── _archive/
+```
+
+## 4. 加 Gate R
+
+Proposal Review 后不再由 Agent 自动 disposition。
+
+所有 recommendation 都进入 Gate R。
+
+## 5. A–D 语义基本保留
+
+v1 的 Gate A/B/C/D 不需要推翻。
+
+核心只调整：
+
+```text
+Stage
+→ Milestone
+```
+
+Gate A 中：
+
+```text
+Stage scope / AC
+→ Milestone scope / AC
+```
+
+Gate D：
+
+```text
+Stage Acceptance
+→ Milestone Acceptance
+```
+
+## 6. 加 Direct Change
+
+小 bug / UI polish / equivalent refactor 不再被迫建立 Work Item。
+
+## 7. 重构 Architecture
+
+不要把所有技术细节搬进 Markdown。
+
+先建 `architecture/README.md`，按需拆 topic。
+
+## 8. 精简 coding-agent-instructions
+
+v2 starter 默认只保留两个真正按需的详细执行手册：
+
+```text
+verification-and-acceptance.md
+documentation-lifecycle.md
+```
+
+Git / runtime / routing / Human Gates 等 standing behavior 直接常驻 `CLAUDE.md`；Proposal Review schema 放在 Proposal template。只有当项目以后出现“CLAUDE 不适合展开、且不读会系统性做错”的复杂条件规则时，才新增 instruction。
+
+## 9. 迁移 CLAUDE.md
+
+旧项目不要覆盖。
+
+保留：
+
+- project-specific hard boundaries；
+- cold start；
+- quick run/verify；
+- Git/runtime/service/artifact rules；
+- security/frozen contract；
+- Gate R/A/B/C/D；
+- right-sized delivery。
+
+## 10. Web ChatGPT File Output Contract
+
+从长期对话整理成文件时，统一：
+
+- 每个文件有 `Description` 与 `Last Updated`；
+- 写正文前先给 Path / Description / Why Needed / Required Headings；
+- 简单主题用 single-file Proposal；
+- 复杂主题用 README-led Proposal Package；
+- Package README 最后生成，只做 overview / navigation / cross-cutting state，不复制 supporting 文件正文。
+
+## 11. Version
+
+GitHub 正式 v1 → 本次正式候选 v2。
+
+不要引用中间未提交实验包的版本号。

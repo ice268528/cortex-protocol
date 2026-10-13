@@ -1,229 +1,203 @@
-# Why Cortex Protocol
+# WHY — Cortex Protocol v2 为什么这样设计
 
-> 这不是“先规定一套流程，再要求大家遵守”。
->
-> Cortex Protocol 是从 AI Coding 项目逐渐变复杂之后反复出现的问题，一步步推导出来的。
+Cortex 不是为了增加流程，而是解决 Agent-driven development 中几类反复出现的问题。
 
-## 1. 小项目时，Prompt 看起来已经够了
+## 1. 聊天历史不是可靠项目记忆
 
-最简单的 AI Coding 模式：
+长时间和 Web ChatGPT / Coding Agent 对话后，真正需要跨 session 保存的是：
 
 ```text
-Human
-  ↓
-“帮我做这个功能”
-  ↓
-Coding Agent
-  ↓
-Code
+Product intent
+Milestone commitment
+Current Work Item
+Approved design
+Architecture truth
+Open blocker
 ```
 
-对于一次性脚本、小改动、短生命周期项目，这往往已经足够。
+所以 Repository 必须成为 durable memory。
 
-问题出现在项目开始具备：长期设计、多 Stage、多 Work Item、多 session、真实用户流程、外部依赖、PR/CI/E2E、多人或多 Agent 协作之后。
+---
 
-## 2. 第一个问题：聊天不是可靠的项目记忆
+## 2. Human 不应该 babysit housekeeping
 
-常见现象：
-
-- 新 session 不知道上次为什么这么设计；
-- Human 重新讲项目背景；
-- Prompt 越来越长；
-- 同一个事实在聊天、TODO、README、代码里出现多个版本；
-- Agent 根据最近上下文行动，而不是根据项目当前真实状态行动。
-
-### 推导
+Human 应该把注意力留给：
 
 ```text
-项目必须跨 session 恢复
-        ↓
-状态不能只存在聊天里
-        ↓
-Repository 成为 durable state carrier
+Proposal 是否接受这个判断？    → Gate R
+重大 approved design 是否要改？ → Gate A
+Spec 行为是否正确？             → Gate B
+真实功能是否成立？              → Gate C
+Milestone 能力是否完整？         → Gate D
 ```
 
-所以 Cortex Protocol 把不同状态放回 Repository：
+而不是不断提醒 Agent：
 
-```text
-CLAUDE.md      → Agent 怎么工作
+- 更新 TODO；
+- 同步某个 README；
+- 再跑一次 review；
+- 服务测试后记得关。
 
-docs/project/ → 系统长期应该是什么样
+---
 
-docs/stages/  → 当前 Stage 承诺什么
+## 3. Proposal 不能偷偷变 Requirement
 
-TODO.md        → 现在做到哪个项目级 Work Item
+Web ChatGPT 很适合探索，但它不知道真实 repo。
 
-code/tests/git → 工程现实
-```
-
-结论：**Repository truth > chat memory。**
-
-## 3. 第二个问题：Human 开始变成流程调度器
-
-项目变大后，Human 经常开始提醒：
-
-```text
-“记得更新 TODO。”
-“这个改动是不是要同步 Domain 文档？”
-“跑一下测试。”
-“做完再 review。”
-“记得开 PR。”
-“Stage 结束后归档一下。”
-```
-
-这些动作本身可能重要，但大部分不是高价值 Human judgment。
-
-### 推导
-
-```text
-可重复的 housekeeping
-        ↓
-应该写入 Repository rules
-        ↓
-由 Coding Agent 主动执行
-```
-
-Human 应逐渐从：
-
-```text
-Workflow Scheduler
-```
-
-退回到：
-
-```text
-理解 → 选择 → 批准 → 验收
-```
-
-## 4. 第三个问题：Agent 又不能完全自主
-
-如果把所有权都交给 Agent，另一类问题会出现：
-
-- 为了让代码跑通，Agent 静默改变产品行为；
-- 为了适配依赖，Agent 改掉 Domain semantics；
-- 为了实现方便，Agent改变核心状态机或安全边界；
-- Human 最后看到“功能完成”，但系统已经不是原来批准的系统。
-
-### 推导
-
-不能在每一步都人工审批，因为那会重新变成 babysitting。
-
-但重大判断也不能让 Agent 静默决定。
-
-所以需要：
-
-```text
-Agent 默认自主推进
-        +
-少数明确的 Human Gates
-```
-
-Cortex Protocol 只保留四类高价值 Gate：
-
-- **A — Design Divergence**：重大上游设计真的要改吗？
-- **B — Spec Review**：这个 change 的系统行为是不是我要的？
-- **C — Feature Acceptance**：真实功能是不是我要的？
-- **D — Stage Acceptance**：阶段承诺是否完整交付？
-
-## 5. 第四个问题：所有“设计”不是同一个粒度
-
-如果把所有层级都放进一个 `CLAUDE.md` 或 TODO，会出现：
-
-- TODO 充满“修改 foo.ts / 写 test X”这种实现任务；
-- 临时实现限制污染长期架构文档；
-- Human 被要求 review 文件级 implementation plan；
-- Agent 不知道哪些设计是长期 baseline，哪些只是当前 change 的工程方案。
-
-### 推导
-
-需要分三层：
-
-```text
-Project-level design
-→ 产品、Domain、Data Flow、Architecture、Stage、Work Item
-
-Change-level design
-→ 当前 Work Item 的具体系统行为 / spec
-
-Implementation-level execution
-→ 文件、函数、测试、顺序、review、verification
-```
-
-对应职责：
+所以已有项目中新 capability：
 
 ```text
 Human + Web ChatGPT
-        ↓ project-level
-Repository baseline
-        ↓
-Claude Code + Superpowers
-        ↓ change-level spec
-Superpowers
-        ↓ implementation-level execution
-Code + tests + PR
+→ Proposal
+→ Coding Agent Review
+→ Gate R
 ```
 
-## 6. 第五个问题：不要重新发明 Superpowers
+关键是：
 
-如果 Superpowers 已经负责当前 change 内的：
+> **Coding Agent recommendation 仍然只是 recommendation。**
 
-- brainstorming；
-- spec；
-- writing plans；
-- isolated worktree；
-- TDD；
-- subagent-driven development；
-- task / whole-change review；
-- verification / fix / re-review；
+如果它认为应该以后做、不能做、不值得做，Human 仍然需要确认这个判断，而不是 Agent 自动把想法归档掉。
 
-那么再在 `CLAUDE.md` 写一套同类 workflow，会产生两个互相竞争的流程。
+这就是 Gate R。
 
-### 推导
+---
 
-Cortex Protocol 只定义 **Superpowers 之外** 的项目级问题：
+## 4. Gate A 为什么不是正常下一步
 
-- project/stage/TODO 是什么；
-- Claude Code 如何恢复状态；
-- 什么是重大设计偏差；
-- Human Gate 何时发生；
-- Gate 时 Human 要看到什么；
-- Gate 后谁负责 reconcile；
-- PR/E2E/文档生命周期如何与项目长期状态衔接。
-
-## 7. 最终得到 Cortex Protocol
+大多数 Work Item：
 
 ```text
-Human intent / judgment
-          ↓
-Web ChatGPT design convergence
-          ↓
-Repository durable truth + state
-          ↓
-Claude Code project-aware execution
-          ↓
-Superpowers disciplined change workflow
-          ↓
-Human returns only at meaningful Gates
+Spec → B → Plan/Code → C
 ```
 
-最终目标不是让 Agent 做得越多越好，而是：
+不应该机械经过 Gate A。
 
-> **Human 和 Agent 各自在正确的层级工作。**
+Gate A 只在真实证据说明：
 
-## 8. 什么时候不值得用 Cortex Protocol
+> **“继续正确实现，必须改变已经批准的重要设计。”**
 
-它不是所有任务都需要的重型流程。
+时触发。
 
-对于一次性脚本、几分钟能完成的小修改、没有长期状态的实验，直接 Prompt + Agent 可能更合适。
+因此它是 interrupt。
 
-当项目开始出现以下任意几项时，Cortex Protocol 才开始显著有价值：
+---
 
-- 多 session；
-- 多个项目级 Work Item；
-- 需要长期设计一致性；
-- Human 不希望持续 babysit Agent；
-- Agent 可能碰到重要业务/架构边界；
-- 需要 PR、CI、E2E、Stage 验收；
-- 需要从聊天迁移到可恢复的 Repository state。
+## 5. 为什么 Stage 被删除
 
-下一步：读 [`docs/01-mental-model.md`](docs/01-mental-model.md)，然后直接进入 [`tutorial/README.md`](tutorial/README.md)。
+v1 使用：
+
+```text
+Stage → Work Item → Task
+```
+
+v2 收敛成：
+
+```text
+Milestone → Work Item → Task
+```
+
+Milestone 直接表达一整层 User Capability 和 Definition of Done。
+
+不再额外保留一个含义接近的 Stage 管理层。
+
+Milestone 默认放在 `roadmap.md`，避免目录继续膨胀。
+
+---
+
+## 6. 为什么小 bug 不应该强制 Spec + Plan
+
+如果：
+
+```text
+改一个 spacing
+修一个已经明确的 regression
+修改 copy
+做一个等价 refactor
+```
+
+也需要：
+
+```text
+TODO
+Spec
+Gate B
+Plan
+Gate C
+```
+
+那么流程会比改动本身更重。
+
+所以 v2 正式允许 Direct Change。
+
+但 Direct Change 不是逃避设计的借口：
+
+```text
+approved semantics 要变 → Gate A
+new capability → Proposal → Gate R
+needs independent design → Work Item
+```
+
+---
+
+## 7. 为什么 Architecture 不能写成所有技术细节的副本
+
+完整 API、DB schema、文件路径如果再复制一份 Markdown，很快会漂移。
+
+Architecture docs 应保存：
+
+```text
+为什么这样分层
+谁拥有数据/contract
+哪些 invariant 不能破坏
+关键数据流怎样跨边界
+兼容性/一致性/安全边界是什么
+```
+
+而 exact endpoint / column / index / schema 让 source code、OpenAPI、migration 等表达。
+
+---
+
+## 8. 为什么 Spec 和 Plan 不一样
+
+```text
+Spec
+= 这个 change 应该怎样工作
+
+Plan
+= 怎么把它实现出来
+```
+
+Human 默认需要审 Spec，而不需要审每个 implementation task。
+
+否则 Human 又会变回项目经理/技术 babysitter。
+
+---
+
+## 9. 为什么 Gate B 与 Gate C 必须分开
+
+```text
+Gate B
+= 设计上，这样工作对吗？
+
+Gate C
+= 真实运行起来，它真的这样工作并且是我要的吗？
+```
+
+测试全部绿色也不能替代真实产品验收。
+
+---
+
+## 10. 为什么还需要 Gate D
+
+最后一个 Work Item Done 并不自动意味着整层能力完整。
+
+Milestone Acceptance 要重新回到：
+
+```text
+User Capability
+Definition of Done / Acceptance Criteria
+整体系统 evidence
+```
+
+Human 明确 accepted 后才真正结束 Milestone。

@@ -1,49 +1,108 @@
-# 10. 常见跑偏方式与修正
+# 10. Troubleshooting
 
-## 症状 1：网页版 ChatGPT 一次生成六七个设计文件
+## 1. Proposal Review 后 Agent 自动归档 DEFER / REJECT
 
-**问题**：人没有真正参与设计，后续冲突难以回溯。
+**错误。**
 
-**修正**：回到逐文件工作协议；当前文件没收敛前不进入下一文件。
+v2 中 Recommendation 不等于 decision。
 
-## 症状 2：`TODO.md` 出现“修改 foo.ts 第 37 行”
+必须 Gate R，让 Human 确认这个判断。
 
-**问题**：项目级 Work Item 和 Superpowers implementation tasks 混在一起。
+---
 
-**修正**：TODO 只保留可独立验证的项目级 change；文件/函数/测试步骤留在 plan。
+## 2. 只有 START_NOW 才 Gate R
 
-## 症状 3：`CLAUDE.md` 写了大量 TDD/subagent/review 细节
+**错误。**
 
-**问题**：与 Superpowers 重复，两个流程可能互相打架。
+ABSORB / DEFER / BLOCK / REJECT 同样需要 Gate R。
 
-**修正**：删掉重复机制，只保留项目级 standing policies 和衔接规则。
+因为 Human 不只是决定“做不做”，还需要确认 Agent 对产品优先级、重复关系、blocker 的判断。
 
-## 症状 4：Agent 发现设计不成立，但“先做出来再说”
+---
 
-**问题**：重大设计偏差被静默吞掉。
+## 3. Gate A 在主流程里像消失了
 
-**修正**：触发 Gate A，提交证据、冲突、建议、影响范围，等人决定。
+Gate A 本来就不是 happy-path stage。
 
-## 症状 5：每次新会话都粘贴一大段项目背景
+它应该画成：
 
-**问题**：Repository state 不完整或不可信。
+```text
+任何受影响阶段
+-. approved design must change .-> A
+```
 
-**修正**：补齐 CLAUDE/TODO/Stage/project docs，让冷启动能从仓库恢复。
+---
 
-## 症状 6：人一直提醒“更新 TODO、同步文档、关服务”
+## 4. 每个 bug 都建 Work Item
 
-**问题**：housekeeping 仍在人的脑内。
+如果正确行为已明确、低风险、小范围，优先 Direct Change。
 
-**修正**：把这些职责写进 coding-agent instructions，并要求 Gate 通过后主动 reconcile。
+---
 
-## 症状 7：每次创建 PR 都再做一次完整 review
+## 5. 为了省流程，把复杂 change 也叫 Direct Change
 
-**问题**：机械重复。
+如果需要：
 
-**修正**：判断 PR HEAD 是否就是刚刚 clean review 的 HEAD；没有变化就复用，变化后再 review。
+- 新 capability；
+- approved semantics 改动；
+- contract/state/security/persistence 变化；
+- 多 design fork；
+- independent acceptance；
 
-## 症状 8：Playwright 只在验收时临时写，之后删除
+就必须升级。
 
-**问题**：没有形成 regression asset。
+---
 
-**修正**：有长期回归价值的测试提交进 repo，未来复用或随行为更新。
+## 6. `roadmap.md` 又变成 task backlog
+
+Roadmap 表达 Milestone / capability / DoD。
+
+Implementation Task 只在 Plan。
+
+---
+
+## 7. Architecture 变成完整 API / DB reference
+
+只保留长期 architecture 层：
+
+```text
+ownership
+boundary
+invariant
+compatibility
+consistency
+lifecycle
+```
+
+Exact schema 留给机器可读 source。
+
+---
+
+## 8. Web ChatGPT 一次生成所有未来设计
+
+新项目默认只需要：
+
+```text
+product
+roadmap
+project-state
++ necessary stable architecture baseline
+```
+
+Optional infrastructure 保持 UNDECIDED。
+
+---
+
+## 9. Gate C 测试绿了就自动 accepted
+
+错误。
+
+Gate C 是 Human 真实功能验收。
+
+---
+
+## 10. 最后一个 Work Item Done 就自动 Milestone Done
+
+错误。
+
+必须回到 Milestone User Capability + AC / DoD，经 Gate D。

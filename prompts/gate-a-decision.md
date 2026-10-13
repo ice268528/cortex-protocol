@@ -1,17 +1,20 @@
-# Prompt：Gate A 时要求 Agent 给出完整决策材料
-
-当 Agent 说设计与工程现实冲突，但说明不够清楚时，可以发送：
+# Prompt：Gate A — Design Divergence
 
 ```text
-先不要继续实现。请按 Gate A 给我一个 Design Divergence Review：
+先不要继续受影响实现。
 
-- 原来的设计是什么；
-- 实际工程证据是什么；
-- 为什么冲突；
-- 你建议怎么改以及理由；
+请按 Gate A 给我 Design Divergence Review：
+
+- 已批准的原 baseline 是什么；
+- 实际验证过的工程证据是什么；
+- 为什么发生冲突；
+- 你建议如何修改以及理由；
 - 有哪些可行 alternatives；
-- 会影响哪些 project docs、stages、TODO；
-- 当前 Superpowers spec/plan 是否仍有效。
+- 对 Product / Roadmap / Architecture / TODO / Spec / Plan / project-state / CLAUDE standing rules 的影响（只列真实受影响 owner）；
+- 哪些内容仍然有效，哪些需要更新或重做。
 
-只陈述你已经验证过的工程事实；把推断明确标出来。等我决定后再继续。
+Gate A 只用于已经批准的重要设计需要实质改变。
+如果只是 implementation defect / equivalent refactor / non-semantic polish，请明确说明为什么不需要 Gate A。
+
+等我决定后再继续。
 ```

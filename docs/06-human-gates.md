@@ -1,197 +1,332 @@
-# 06. Human Gates：人什么时候必须回来
+# 06. Human Gates：R / A / B / C / D
 
-四个 Gate 的目标不是“增加审批”，而是把 Human judgment 集中在真正有价值的节点。
-
-一个简单判断原则：
-
-> **如果问题可以由工程证据 + 已批准设计直接决定，Agent 应自己处理。**
->
-> **如果问题会改变 Human 曾经批准的产品/系统语义，或需要 Human 判断真实结果是否可接受，才回到 Gate。**
+Human Gate 的目标不是增加审批，而是把 Human 判断集中到真正有价值的节点。
 
 ---
 
-## Gate A — Design Divergence Review
+# Gate R — Proposal Decision
 
-### 触发
+## Trigger
 
-实际工程证据足以说明已批准的重要设计需要实质修改。
+Coding Agent 已经完成足够的 Proposal Review，并形成明确 recommendation。
 
-### Agent 应提交什么
+## 关键原则
 
-- 原设计是什么；
-- 新的工程证据是什么；
-- 为什么两者冲突；
-- 建议修改什么；
-- alternatives；
-- 影响哪些 `docs/project/`；
-- 影响哪些 Stage；
-- 影响哪些 TODO；
-- 当前 spec/plan 是否需要作废或重做。
+> **Agent 的 Review Result 不是最终决定。**
 
-### Human 的工作
-
-回答：**这个已批准的重要设计真的要改吗？**
-
-批准后由 Agent 主动 reconcile 受影响文档，然后判断是否需要回到 brainstorming/spec/plan。
-
-### Gate A examples / non-examples
-
-| 情况 | Gate A? | 原因 |
-|---|---:|---|
-| 内部 API 方法名和设计文档不同 | No | implementation detail，业务语义未变 |
-| DB 字段改名但语义不变 | No | storage implementation detail |
-| ORM 需要额外 mapping 层 | 通常 No | 只要长期行为/边界不变 |
-| error handling 结构需要重构 | No | change-level engineering detail |
-| 原设计允许退款，但真实支付 API 不支持该行为 | Yes | 产品行为可能改变 |
-| 为兼容真实 API，Domain 必须新增一个核心状态 | Yes | Domain semantics / state machine 改变 |
-| 实际认证方案要求扩大受信任边界 | Yes | Security boundary 改变 |
-| 当前 Work Item 实际需要跨出 Stage 原 scope 才能成立 | Yes | Stage scope / Goal 可能改变 |
-| 单元测试目录结构与预期不同 | No | test structure 不属于上游设计 |
-
-### 快速判断
-
-问自己：
-
-> “如果 Human 完全不知道这个变化，最后看到系统时，会不会发现自己批准过的行为、规则、状态、边界或 Stage 承诺已经变了？”
-
-如果答案是 **会**，通常应该进入 Gate A。
-
----
-
-## Gate B — Spec Review
-
-### Agent 应提交什么
-
-除 spec 本身，再给一份 **Design Review Packet**。只展示当前 change 真正相关的内容，例如：
-
-- 业务流程；
-- 数据流；
-- 状态变化；
-- 关键计算逻辑；
-- Persistence 边界；
-- External Service Interaction；
-- 用户可观察的失败路径。
-
-如果是 AI Agent 功能，还应解释：输入、context assembly、model context、tools、tool selection、tool execution、tool result 回流、agent state、最终 output、最终业务 decision ownership。
-
-### Human 的工作
-
-回答：**这个系统设计是不是我要的？**
-
-不批准就回 brainstorming；批准就进入 plan/execution。
-
-### YOUR JOB RIGHT NOW
+无论 Agent 建议：
 
 ```text
-✓ 看业务流程
-✓ 看数据流
-✓ 看状态变化
-✓ 看系统边界
-✓ 看最终用户/业务行为
-
-✗ 不 review 文件怎么拆
-✗ 不指定函数怎么写
-✗ 不手工设计测试步骤
-✗ 不 review implementation plan（默认）
+START_NOW
+ABSORB
+DEFER
+BLOCK
+REJECT
 ```
 
-### Gate B examples / non-examples
+都必须告诉 Human：
 
-| Human 反馈 | 适合 Gate B? | 原因 |
-|---|---:|---|
-| “这个审批状态不应该自动进入 approved。” | Yes | 系统行为/状态语义 |
-| “失败时用户应该看到可重试，而不是永久失败。” | Yes | 用户可观察行为 |
-| “这里应该由业务服务拥有最终 decision，而不是模型。” | Yes | decision ownership |
-| “把这个 class 拆成两个文件。” | No | implementation detail |
-| “我更喜欢这个测试放 integration 目录。” | No | implementation detail |
+- 审查发现了什么；
+- 真实 repo evidence 是什么；
+- 为什么给这个 recommendation；
+- 接受 recommendation 后下一步是什么。
+
+然后 Human 确认。
+
+## START_NOW
+
+Agent 说明：
+
+- 为什么建议现在做；
+- 对当前 Milestone 的影响；
+- 是否已经存在前置条件；
+- 是否需要改变 approved design；
+- 建议的 Work Item 边界。
+
+Human 回答：
+
+> **现在开始做吗？**
+
+## ABSORB
+
+Agent 说明：
+
+- 已经被哪个 Milestone / Work Item / existing capability 覆盖；
+- Proposal 中还有没有未覆盖 residual scope。
+
+Human 回答：
+
+> **我同意它已经被覆盖了吗？**
+
+## DEFER
+
+Agent 说明：
+
+- 为什么现在不做；
+- Revisit Trigger。
+
+Human 回答：
+
+> **我同意延后的理由和重新考虑条件吗？**
+
+## BLOCK
+
+Agent 说明：
+
+- blocker；
+- 还缺什么 evidence / dependency；
+- Recheck Trigger。
+
+Human 回答：
+
+> **我同意当前不能推进的判断吗？**
+
+## REJECT
+
+Agent 说明：
+
+- 不建议做的理由；
+- 与 product principle / scope / existing capability 的冲突。
+
+Human 回答：
+
+> **我同意这个“不做”的判断吗？**
+
+## Human 可以不同意
+
+Gate R outcome：
+
+```text
+ACCEPT_RECOMMENDATION
+OVERRIDE
+REQUEST_MORE_REVIEW
+REVISE_PROPOSAL
+```
+
+**未经 Human 确认，不自动 archive / Roadmap admission / implementation。**
+
+## Post-decision sync
+
+Human 确认后：
+- `START_NOW`：落 Proposal disposition；如形成新的 Milestone/capability commitment，更新 Roadmap；Work Item 真正 activated 时再更新 TODO + project-state checkpoint；
+- `ABSORB`：traceability + absorbed disposition；
+- `DEFER`：deferred disposition + Revisit Trigger；
+- `BLOCK`：blocked disposition + Evidence Needed / Recheck Trigger；
+- `REJECT`：rejected disposition + reason；
+- Human 要求更多 Review / 修改 Proposal 时，不把原 recommendation 当最终 truth。
 
 ---
 
-## Gate C — Feature Acceptance
+# Gate A — Design Divergence
 
-### 前置条件
+## Trigger
 
-实现、必要自动验证、review、适用的 E2E 已完成。
+实际工程证据表明已经批准的：
 
-### Agent 应提交什么
+- project design；
+- 当前 Milestone capability / scope / Acceptance Criteria；
+- current approved change design（如 Gate B accepted Spec）；
 
-- Work Item / PR；
+需要实质修改。
+
+## Agent Packet
+
+```text
+Original Approved Baseline
+Verified Engineering Evidence
+Why They Conflict
+Suggested Change
+Alternatives
+Impact
+Affected durable owners (product / roadmap / architecture / Spec / Plan / TODO / project-state / CLAUDE as applicable)
+```
+
+## Human
+
+回答：
+
+> **这个已批准的重要设计真的要改吗？**
+
+Gate A 是 interrupt。
+
+## Post-decision sync
+
+Gate A pending 时只记录 live blocker/evidence；Human 决定前不把建议改动写成 approved/current truth。
+
+Human accepted 后先按 durable fact 更新受影响 owner，再继续：
+- Product intent → `product.md`
+- Milestone scope/AC/DoD → `roadmap.md`
+- long-lived architecture baseline → `architecture/*`
+- current Work Item approved design → Spec
+- implementation path → Plan
+- live Work Item/Gate/Next/blocker → `TODO.md`
+- Human-visible checkpoint → `project-state.md`
+- every-session critical boundary/code map/run-verify/standing rule → `CLAUDE.md`
+
+不是每次 Gate A 都修改全部文件，只更新真实受影响 owner。
+
+## Examples
+
+| 情况 | Gate A? |
+|---|---:|
+| 文件拆分改变，行为不变 | No |
+| DB column 改名，语义不变 | No |
+| approved state machine 必须新增核心状态 | Yes |
+| 真实 provider 不支持 approved product behavior | Yes |
+| 当前 Work Item 必须突破 Milestone scope 才成立 | Yes |
+| 单纯 implementation bug | No |
+| pure visual polish | No |
+
+---
+
+# Gate B — Spec Review
+
+## Trigger
+
+正式 Work Item Spec 收敛。
+
+Agent 提供：
+
+- Spec；
+- 简洁 Design Review Packet。
+
+Human 重点看：
+
+```text
+业务流程
+用户行为
+数据/状态/control flow
+source of truth
+failure semantics
+persistence/external boundary
+invariants
+important design forks
+non-goals
+```
+
+不看：
+
+```text
+文件怎么拆
+helper 怎么命名
+task 顺序
+默认 Plan decomposition
+```
+
+Human 回答：
+
+> **这个系统设计是不是我要的？**
+
+## Post-decision sync
+
+Gate B accepted 后：
+1. Spec 标记 accepted / approved baseline；
+2. TODO 更新 live status；
+3. 创建/更新 Plan，以 approved Spec 为 baseline；
+4. 通常不更新 project-state；
+5. 不提前把 future implementation 写进 `Verified Current` architecture 或 CLAUDE standing truth。
+
+如果 Human 要求修改 Spec，则继续修改并重新 Gate B；如果修改要求改变更上游 approved baseline，进入 Gate A。
+
+---
+
+# Gate C — Feature / Work Item Acceptance
+
+## Trigger
+
+Work Item：
+
+- implementation 完成；
+- 必要自动验证完成；
+- review/fix 完成；
+- 适用 E2E 完成。
+
+Agent 提供：
+
 - 实际完成内容；
-- 已执行的 unit/integration/CI/review/E2E；
-- 需要手动验收的场景；
-- 每个场景的操作与预期；
-- 尚无法自动验证的内容；
-- 人工验收所需的服务和入口。
+- 实际执行过的 verification；
+- Human 手动场景；
+- 操作步骤；
+- expected result；
+- known limitations。
 
-### Human 的工作
+Human 回答：
 
-回答：**这个真实功能是不是我要的？**
+> **这个真实功能是不是我要的？**
 
-通过后，Agent 才把 Work Item 标为 Done。
+accepted 前不得 Work Item Done。
 
-### YOUR JOB RIGHT NOW
+## Post-decision sync
 
-```text
-✓ 按场景实际使用功能
-✓ 看真实用户结果
-✓ 看不可自动验证的产品体验
-✓ accepted / not accepted
+Gate C accepted 后：
+- TODO 中 Work Item → Done；
+- project-state 形成 Work Item checkpoint；
+- 只把已实际成立、跨 Work Item 长期有价值的事实同步为 `Verified Current` architecture；
+- 更新必要 Proposal traceability；
+- 若真实实现改变 stable run command / minimal code map / critical standing boundary，同步 `CLAUDE.md`；
+- 检查 Milestone DoD/AC，满足则进入 Gate D。
 
-✗ 不重新做一遍 code review
-✗ 不提醒 Agent 更新 TODO
-✗ 不点名要同步哪份 Markdown
-✗ 不把“测试绿了”当成 Feature accepted
-```
-
-### Gate B 和 Gate C 的区别
-
-```text
-Gate B：设计上，这个功能应该这样工作吗？
-Gate C：真实运行起来，它真的这样工作，而且是我想要的吗？
-```
+Direct Change 默认不需要正式 Gate C。
 
 ---
 
-## Gate D — Stage Acceptance
+# Gate D — Milestone Acceptance
 
-### Agent 应提交什么
+## Trigger
 
-基于 Stage 的 Goal、Acceptance Criteria、Work Items 和当前实际系统，说明为什么 Stage 已满足。
-
-### Human 的工作
-
-回答：**这个 Stage 承诺的能力是否完整交付？**
-
-明确 accepted 后，Agent 才执行 final reconciliation、archive 和进入下一 Stage。
-
-### YOUR JOB RIGHT NOW
+当前 Milestone 的：
 
 ```text
-✓ 回到 Stage Goal
-✓ 逐条看 Acceptance Criteria
-✓ 看整个 Stage 的能力组合
-✓ 明确 accepted / not accepted
-
-✗ 不因为“最后一个 Work Item Done”就自动接受 Stage
-✗ 不提前设计下一 Stage 的 implementation plan
+Work Items
++
+Definition of Done / Acceptance Criteria
 ```
+
+都有 evidence。
+
+Agent 提供：
+
+- Milestone User Capability；
+- AC / DoD 逐条证据；
+- Work Item final states；
+- 当前真实系统与 Milestone promise 的对应；
+- known limitation / deferred scope。
+
+Human 回答：
+
+> **这个 Milestone 承诺的整层用户能力完整交付了吗？**
+
+accepted 后执行 Post-decision sync：
+
+- roadmap Milestone status → accepted；
+- project-state 更新 Latest Accepted Milestone / Current Milestone / Next / Recent Checkpoints；
+- final reconciliation；
+- archive 过时 Milestone-scoped artifact；
+- 如 every-session standing context 改变，同步 `CLAUDE.md`；
+- 然后 move to next Milestone。
 
 ---
 
-## Mini Quiz：Is this a Gate?
+# 五 Gate 之间的关系
 
-先自己回答，再展开答案。
+```text
+Proposal
+→ Review
+→ R
 
-1. 数据库字段名与设计不同，但业务语义完全一致。Gate A？
-2. 真实 API 要求核心状态机新增一个状态。Gate A？
-3. Spec 行为已经批准，Agent 给出一个 20 步 implementation plan。需要新增 Human Gate review plan 吗？
-4. 所有测试都绿了，但用户真实操作路径和预期不一致。Gate C 应该 accepted 吗？
-5. Stage 最后一个 Work Item 完成，但一条 Acceptance Criteria 没有证据。Gate D 可以 accepted 吗？
+Work Item
+→ Spec
+→ B
+→ Implementation
+→ C
 
-### 答案
+Design Divergence anywhere after approved baseline exists
+→ A
 
-1. **通常 No。** 这是局部实现差异。
-2. **Yes。** Domain semantics / state machine 改变。
-3. **默认 No。** Plan 属于 Agent 工程执行层；只有它暴露重大设计偏差才转 Gate A。
-4. **No。** 自动验证不能替代真实 Feature Acceptance。
-5. **No。** Stage completion 不是“最后一个 Work Item Done”的同义词。
+Milestone complete
+→ D
+```
+
+其中：
+
+> **A 是 interrupt；R 是 Proposal decision；B/C 是 Work Item design/acceptance；D 是 Milestone acceptance。**
